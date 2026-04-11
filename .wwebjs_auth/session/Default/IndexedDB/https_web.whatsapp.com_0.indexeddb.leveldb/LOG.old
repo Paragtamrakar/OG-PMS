@@ -1,0 +1,14 @@
+2026/04/09-22:04:17.297 e266 Reusing MANIFEST /Users/paragtamrakar/Downloads/Master file/a-My -Porjects/og-pms/billing-software/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/04/09-22:04:17.297 e266 Recovering log #109
+2026/04/09-22:04:17.317 e266 Reusing old log /Users/paragtamrakar/Downloads/Master file/a-My -Porjects/og-pms/billing-software/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000109.log 
+2026/04/09-22:04:20.039 e273 Level-0 table #118: started
+2026/04/09-22:04:20.050 e273 Level-0 table #118: 1131425 bytes OK
+2026/04/09-22:04:20.051 e273 Delete type=0 #109
+2026/04/09-22:04:20.206 e268 Compacting 1@1 + 5@2 files
+2026/04/09-22:04:20.237 e268 Generated table #119@1: 52631 keys, 2219868 bytes
+2026/04/09-22:04:20.246 e268 Generated table #120@1: 5477 keys, 2148506 bytes
+2026/04/09-22:04:20.255 e268 Generated table #121@1: 4290 keys, 2144429 bytes
+2026/04/09-22:04:20.272 e268 Generated table #122@1: 23172 keys, 2212007 bytes
+2026/04/09-22:04:20.298 e268 Generated table #123@1: 73494 keys, 1942775 bytes
+2026/04/09-22:04:20.298 e268 Compacted 1@1 + 5@2 files => 10667585 bytes
+2026/04/09-22:04:20.299 e268 compacted to: files[ 0 0 5 0 0 0 0 ]

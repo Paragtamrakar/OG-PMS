@@ -1,0 +1,26 @@
+2026/04/09-22:20:11.932 10f8a Reusing MANIFEST /Users/paragtamrakar/Downloads/Master file/a-My -Porjects/og-pms/billing-software/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/04/09-22:20:11.932 10f8a Recovering log #117
+2026/04/09-22:20:11.951 10f8a Reusing old log /Users/paragtamrakar/Downloads/Master file/a-My -Porjects/og-pms/billing-software/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000117.log 
+2026/04/09-22:20:11.952 10f8a Delete type=2 #115
+2026/04/09-22:20:11.952 10f8a Delete type=2 #114
+2026/04/09-22:20:11.952 10f8a Delete type=2 #111
+2026/04/09-22:20:11.952 10f8a Delete type=2 #113
+2026/04/09-22:20:11.952 10f8a Delete type=2 #112
+2026/04/09-22:20:11.952 10f8a Delete type=2 #118
+2026/04/09-22:20:15.376 10f8a Level-0 table #126: started
+2026/04/09-22:20:15.390 10f8a Level-0 table #126: 1237418 bytes OK
+2026/04/09-22:20:15.391 10f8a Delete type=0 #117
+2026/04/09-22:20:15.621 10f95 Compacting 1@1 + 5@2 files
+2026/04/09-22:20:15.648 10f95 Generated table #127@1: 57096 keys, 2225894 bytes
+2026/04/09-22:20:15.675 10f95 Generated table #128@1: 7891 keys, 2152205 bytes
+2026/04/09-22:20:15.691 10f95 Generated table #129@1: 2533 keys, 2138264 bytes
+2026/04/09-22:20:15.712 10f95 Generated table #130@1: 24933 keys, 2219605 bytes
+2026/04/09-22:20:15.734 10f95 Generated table #131@1: 74863 keys, 2085801 bytes
+2026/04/09-22:20:15.734 10f95 Compacted 1@1 + 5@2 files => 10821769 bytes
+2026/04/09-22:20:15.739 10f95 compacted to: files[ 0 0 5 0 0 0 0 ]
+2026/04/09-22:20:15.739 10f95 Delete type=2 #123
+2026/04/09-22:20:15.739 10f95 Delete type=2 #122
+2026/04/09-22:20:15.739 10f95 Delete type=2 #120
+2026/04/09-22:20:15.739 10f95 Delete type=2 #121
+2026/04/09-22:20:15.739 10f95 Delete type=2 #119
+2026/04/09-22:20:15.739 10f95 Delete type=2 #126
