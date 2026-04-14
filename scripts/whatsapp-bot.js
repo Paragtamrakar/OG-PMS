@@ -151,7 +151,13 @@ console.log('🤖 OG PMS Green API Bot start ho raha hai...');
 sendDailyReport();
 
 // 🕙 Daily cron (10 PM IST)
-cron.schedule('0 22 * * *', () => {
+// cron.schedule('0 22 * * *', () => {
+//   console.log("🌙 Running daily report...");
+//   sendDailyReport();
+// }, {
+//   timezone: "Asia/Kolkata"
+// });
+cron.schedule('* * * * *', () => {
   console.log("🌙 Running daily report...");
   sendDailyReport();
 }, {
