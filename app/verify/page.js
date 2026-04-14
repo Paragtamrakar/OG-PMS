@@ -18,7 +18,15 @@ export default function VerifyPage() {
         setLoading(true);
 
         const res = await fetch(`/api/guest-search?q=${query}`);
+        if (!res.ok) {
+            const text = await res.text();
+            console.error("API ERROR:", text);
+            alert("Failed to fetch police register");
+            return;
+        }
+
         const data = await res.json();
+
 
         setResults(data);
         setLoading(false);
@@ -46,29 +54,37 @@ export default function VerifyPage() {
 
         const rows = [];
 
-        data.forEach((b) => {
+       (data.invoices || []).forEach((inv) => {
 
-            const otherGuests = b.guests && b.guests.length > 0
-                ? b.guests.map(g => `${g.name} (${g.idType}:${g.idNumber})`).join(", ")
-                : "-";
+    // 🔥 booking match karo
+    const booking = (data.bookings || []).find(
+        (b) => String(b._id) === String(inv.bookingId)
+    );
 
-            rows.push([
-                b.bookingId,
-                b.roomSnapshot.roomNo,
-                b.guest.name,
-                b.guest.fatherName || "-",
-                b.guest.phone || "-",
-                b.guest.address || "-",
-                b.guest.vehicleNumber || "-",
-                b.guest.fromCity || "-",
-                b.guest.purposeOfVisit || "-",
-                b.guest.idType || "-",
-                b.guest.idNumber || "-",
-                otherGuests,
-                new Date(b.checkIn).toLocaleDateString(),
-                new Date(b.checkOut).toLocaleDateString()
-            ]);
+    const otherGuests = booking?.guests?.length
+        ? booking.guests.map(g => `${g.name} (${g.idType}:${g.idNumber})`).join(", ")
+        : "-";
 
+    rows.push([
+        inv.invoiceNumber, // ✅ invoice
+        booking?.roomSnapshot?.roomNo || inv.roomNo,
+        booking?.guest?.name || inv.guestName,
+        booking?.guest?.fatherName || "-",
+        booking?.guest?.phone || "-",
+        booking?.guest?.address || "-",
+        booking?.guest?.vehicleNumber || "-",
+        booking?.guest?.fromCity || "-",
+        booking?.guest?.purposeOfVisit || "-",
+        booking?.guest?.idType || "-",
+        booking?.guest?.idNumber || "-",
+        otherGuests,
+        new Date(inv.checkIn).toLocaleDateString(),
+        new Date(inv.checkOut).toLocaleDateString() // ✅ actual
+    ]);
+});
+
+        rows.sort((a, b) => {
+            return new Date(a[12]) - new Date(b[12]); // checkIn index = 12
         });
 
         autoTable(doc, {

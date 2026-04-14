@@ -1,21 +1,29 @@
 import { connectDB } from "@/Mongodb/db";
+import Invoice from "@/Schema/Invoice";
 import Booking from "@/Schema/Booking";
 
 export async function GET(req) {
+  try {
+    await connectDB();
 
-  await connectDB();
+    const { searchParams } = new URL(req.url);
+    const from = new Date(searchParams.get("from"));
+    const to = new Date(searchParams.get("to"));
 
-  const { searchParams } = new URL(req.url);
+    const invoices = await Invoice.find({
+      checkIn: { $lte: to },
+      checkOut: { $gte: from }
+    });
 
-  const from = searchParams.get("from");
-  const to = searchParams.get("to");
+    const bookings = await Booking.find(); // 🔥 sab le lo (simple)
 
-  const bookings = await Booking.find({
-    checkIn: {
-      $gte: new Date(from),
-      $lte: new Date(to)
-    }
-  }).sort({ checkIn: 1 });
+    return Response.json({
+      invoices,
+      bookings
+    });
 
-  return Response.json(bookings);
+  } catch (err) {
+    console.error(err);
+    return new Response(JSON.stringify({ error: "Server Error" }), { status: 500 });
+  }
 }
