@@ -36,8 +36,11 @@ async function sendWhatsApp(message, phone = CLIENT_NUMBER) {
 // ✅ Aaj ki sales fetch
 async function getTodaySales() {
   try {
-    const today = new Date().toISOString().split('T')[0];
-    const url = `${VERCEL_URL}/api/export?from=${today}&to=${today}`;
+    const today = new Date().toLocaleDateString('en-CA', {
+      timeZone: 'Asia/Kolkata'
+    });
+
+    const url = `${VERCEL_URL}/api/reports?from=${today}&to=${today}`;
 
     console.log('🌐 Fetching:', url);
 
@@ -151,18 +154,13 @@ console.log('🤖 OG PMS Green API Bot start ho raha hai...');
 sendDailyReport();
 
 // 🕙 Daily cron (10 PM IST)
-// cron.schedule('0 22 * * *', () => {
-//   console.log("🌙 Running daily report...");
-//   sendDailyReport();
-// }, {
-//   timezone: "Asia/Kolkata"
-// });
 cron.schedule('0 22 * * *', () => {
   console.log("🌙 Running daily report...");
   sendDailyReport();
 }, {
   timezone: "Asia/Kolkata"
 });
+
 
 // ✅ Export (future API use)
 module.exports = {
