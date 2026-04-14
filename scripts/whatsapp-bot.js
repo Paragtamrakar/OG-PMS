@@ -150,11 +150,10 @@ Visit again!`;
 // ✅ Start bot
 console.log('🤖 OG PMS Green API Bot start ho raha hai...');
 
-// 🔥 Test once
-sendDailyReport();
+
 
 // 🕙 Daily cron (10 PM IST)
-cron.schedule('*/2 * * * *', () => {
+cron.schedule('9 23 * * *', () => {
   console.log("🌙 Running daily report...");
   sendDailyReport();
 }, {
