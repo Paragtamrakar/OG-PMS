@@ -1,206 +1,166 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
 const cron = require('node-cron');
-const qrcode = require('qrcode');
-const fs = require('fs');
 
-// ✅ Config — Render pe Environment Variables se aayega
-const CLIENT_NUMBER = process.env.CLIENT_NUMBER || '917223952680'; // dummy
-const VERCEL_URL    = process.env.VERCEL_URL    || 'https://og-pms.vercel.app';
+// ✅ Green API config (abhi hardcode)
+const INSTANCE_ID = "7107587167";
+const API_TOKEN = "d510569e10e34216a3b38a165e312e56efda7b45e2c345b38d";
+const CLIENT_NUMBER = "917223952680";
 
-// ✅ WhatsApp Client
-const client = new Client({
-    authStrategy: new LocalAuth({
-        dataPath: './whatsapp-session'
-    }),
-    puppeteer: {
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu'
-        ]
-    }
-});
+const VERCEL_URL = "https://og-pms.vercel.app";
 
-let cronStarted = false;
-let isSending   = false;
+let isSending = false;
 
-// 🔲 QR — image file mein save hogi
-client.on('qr', async (qr) => {
-    console.log('📱 QR Mila — qr.png file mein save ho rahi hai...');
-    try {
-        await qrcode.toFile('./qr.png', qr);
-        console.log('✅ qr.png save ho gayi!');
-        console.log('👉 Render dashboard se qr.png download karo aur scan karo');
-    } catch (err) {
-        console.error('❌ QR save error:', err.message);
-    }
-});
+// ✅ Send WhatsApp via Green API
+async function sendWhatsApp(message, phone = CLIENT_NUMBER) {
+  const url = `https://api.green-api.com/waInstance${INSTANCE_ID}/sendMessage/${API_TOKEN}`;
 
-// ✅ WhatsApp Ready
-client.on('ready', () => {
-    console.log('✅ WhatsApp Connected & Ready!');
-
-    if (!cronStarted) {
-        cronStarted = true;
-
-        // 🔥 Pehli baar turant test
-        sendDailyReport();
-
-        // 🕙 Roz raat 10 baje (IST)
-        cron.schedule('0 22 * * *', () => {
-            console.log('🌙 Daily Report chal raha hai...');
-            sendDailyReport();
-        }, {
-            timezone: 'Asia/Kolkata'
-        });
-
-        console.log('⏰ Scheduler ready — roz 10 PM report jayegi!');
-    }
-});
-
-// ❌ Auth Failure
-client.on('auth_failure', () => {
-    console.log('❌ Auth Failed — QR dubara scan karo');
-});
-
-// ⚠️ Disconnected
-client.on('disconnected', (reason) => {
-    console.log('⚠️ Disconnected:', reason);
-    // Auto reconnect
-    setTimeout(() => {
-        console.log('🔄 Reconnect ho raha hai...');
-        client.initialize();
-    }, 5000);
-});
-
-// ✅ Aaj ki sales Vercel se fetch karo
-async function getTodaySales() {
-    try {
-        const today = new Date().toISOString().split('T')[0];
-        const url   = `${VERCEL_URL}/api/export?from=${today}&to=${today}`;
-
-        console.log('🌐 Fetching:', url);
-
-        const res = await fetch(url);
-
-        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
-        const data = await res.json();
-        console.log('📊 Data:', data);
-        return data;
-
-    } catch (err) {
-        console.error('❌ Fetch Error:', err.message);
-        return null;
-    }
-}
-
-// ✅ Message Format
-function formatDailyReport(data) {
-    const fmt  = n => Number(n || 0).toLocaleString('en-IN');
-    const date = new Date().toLocaleDateString('en-IN', {
-        day:   '2-digit',
-        month: 'long',
-        year:  'numeric'
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chatId: `${phone}@c.us`,
+        message: message
+      })
     });
 
-    if (!data || (!data.totalRevenue && !data.roomRevenue && !data.foodRevenue)) {
-        return `🏨 *OG PMS Daily Report*
+    const data = await res.json();
+    console.log("✅ Sent:", data);
+
+  } catch (err) {
+    console.error("❌ Error:", err.message);
+  }
+}
+
+// ✅ Aaj ki sales fetch
+async function getTodaySales() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const url = `${VERCEL_URL}/api/export?from=${today}&to=${today}`;
+
+    console.log('🌐 Fetching:', url);
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+    const data = await res.json();
+    console.log('📊 Data:', data);
+
+    return data;
+
+  } catch (err) {
+    console.error('❌ Fetch Error:', err.message);
+    return null;
+  }
+}
+
+// ✅ Format message
+function formatDailyReport(data) {
+  const fmt = n => Number(n || 0).toLocaleString('en-IN');
+  const date = new Date().toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  if (!data || (!data.totalRevenue && !data.roomRevenue && !data.foodRevenue)) {
+    return `🏨 OG PMS Daily Report
 
 📅 ${date}
 
 ━━━━━━━━━━━━━━
-⚠️ Aaj koi sale record nahi hui
-
+⚠️ No sales recorded today
 ━━━━━━━━━━━━━━
+
 _The OG Developers_`;
-    }
+  }
 
-    return `🏨 *OG PMS Daily Report*
+  return `🏨 OG PMS Daily Report
 
 📅 ${date}
 
 ━━━━━━━━━━━━━━
 
-💰 *Total Revenue:* ₹${fmt(data.totalRevenue)}
+💰 Total Revenue: ₹${fmt(data.totalRevenue)}
 
-🏨 Room Revenue:  ₹${fmt(data.roomRevenue)}
-🍽️ Food Revenue:  ₹${fmt(data.foodRevenue)}
-🧾 GST Collected: ₹${fmt(data.gstCollected)}
+🏨 Room: ₹${fmt(data.roomRevenue)}
+🍽 Food: ₹${fmt(data.foodRevenue)}
+🧾 GST: ₹${fmt(data.gstCollected)}
 
 ━━━━━━━━━━━━━━
+
 _The OG Developers_`;
 }
 
-// ✅ Daily Report Send
+// ✅ Daily report send
 async function sendDailyReport() {
-    if (isSending) return;
-    isSending = true;
+  if (isSending) return;
+  isSending = true;
 
-    try {
-        console.log('🚀 Report bhejna shuru...');
+  try {
+    console.log('🚀 Sending report...');
 
-        const data    = await getTodaySales();
-        const message = formatDailyReport(data);
+    const data = await getTodaySales();
+    const message = formatDailyReport(data);
 
-        console.log('📝 Message:\n', message);
+    console.log('📝 Message:\n', message);
 
-        await client.sendMessage(`${CLIENT_NUMBER}@c.us`, message);
+    await sendWhatsApp(message);
 
-        console.log('✅ Report bhej di!');
+    console.log('✅ Report sent');
 
-    } catch (err) {
-        console.error('❌ Send Error:', err.message);
-    }
+  } catch (err) {
+    console.error('❌ Send Error:', err.message);
+  }
 
-    isSending = false;
+  isSending = false;
 }
 
-// ✅ Check-in Message (future use)
+// ✅ Check-in (future ready)
 async function sendCheckinMessage(guestPhone, guestName, roomNo, checkOut) {
-    try {
-        const message = `🏨 *Welcome to Our Hotel!*
+  const message = `🏨 Welcome!
 
-👤 *Guest:* ${guestName}
-🚪 *Room No:* ${roomNo}
-📅 *Check-in:* ${new Date().toLocaleDateString('en-IN')}
-📅 *Check-out:* ${checkOut}
+👤 ${guestName}
+🚪 Room: ${roomNo}
+📅 Check-in: ${new Date().toLocaleDateString('en-IN')}
+📅 Check-out: ${checkOut}
 
-Apna koi bhi sawaal poochh sakte hain!
-Aapka swagat hai! 🙏`;
+Enjoy your stay!`;
 
-        await client.sendMessage(`91${guestPhone}@c.us`, message);
-        console.log(`✅ Check-in message bheja: ${guestPhone}`);
-
-    } catch (err) {
-        console.error('❌ Check-in message error:', err.message);
-    }
+  await sendWhatsApp(message, `91${guestPhone}`);
 }
 
-// ✅ Check-out Message (future use)
+// ✅ Check-out (future ready)
 async function sendCheckoutMessage(guestPhone, guestName, totalAmount, nights) {
-    try {
-        const message = `🙏 *Thank You for Staying!*
+  const message = `🙏 Thank you for staying!
 
-👤 *Guest:* ${guestName}
-🌙 *Nights:* ${nights}
-💰 *Total Bill:* ₹${Number(totalAmount).toLocaleString('en-IN')}
+👤 ${guestName}
+🌙 Nights: ${nights}
+💰 Bill: ₹${Number(totalAmount).toLocaleString('en-IN')}
 
-Dubara padhaarein! ⭐
-_The OG Developers_`;
+Visit again!`;
 
-        await client.sendMessage(`91${guestPhone}@c.us`, message);
-        console.log(`✅ Check-out message bheja: ${guestPhone}`);
-
-    } catch (err) {
-        console.error('❌ Check-out message error:', err.message);
-    }
+  await sendWhatsApp(message, `91${guestPhone}`);
 }
 
-// ✅ Functions export (future API use ke liye)
-module.exports = { sendCheckinMessage, sendCheckoutMessage, sendDailyReport };
+// ✅ Start bot
+console.log('🤖 OG PMS Green API Bot start ho raha hai...');
 
-// 🚀 Start
-console.log('🤖 OG PMS WhatsApp Bot start ho raha hai...');
-client.initialize();
+// 🔥 Test once
+sendDailyReport();
+
+// 🕙 Daily cron (10 PM IST)
+cron.schedule('0 22 * * *', () => {
+  console.log("🌙 Running daily report...");
+  sendDailyReport();
+}, {
+  timezone: "Asia/Kolkata"
+});
+
+// ✅ Export (future API use)
+module.exports = {
+  sendDailyReport,
+  sendCheckinMessage,
+  sendCheckoutMessage
+};
