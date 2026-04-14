@@ -157,7 +157,7 @@ sendDailyReport();
 // }, {
 //   timezone: "Asia/Kolkata"
 // });
-cron.schedule('* * * * *', () => {
+cron.schedule('0 22 * * *', () => {
   console.log("🌙 Running daily report...");
   sendDailyReport();
 }, {
