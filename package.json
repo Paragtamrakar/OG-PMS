@@ -17,6 +17,7 @@
     "mongoose": "^9.1.6",
     "next": "16.1.6",
     "node-cron": "^4.2.1",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
