@@ -1,13 +1,15 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Loader from "@/Components/Loader/Loader";
 export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const params = new URLSearchParams(window.location.search);
-  const from = params.get("from");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
 
   // PRESERVED LOGIC: Existing handleLogin function
   const handleLogin = async (e) => {
@@ -31,7 +33,7 @@ export default function App() {
       if (data.success) {
         // PRESERVED LOGIC: router navigation (mocked for preview)
         console.log("Redirecting to /...");
-        window.location.href = from || "/";
+        router.push(from || "/");
       } else {
         alert(data.message || "Login failed");
       }
