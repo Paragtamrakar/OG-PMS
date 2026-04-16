@@ -10,10 +10,11 @@ export default function App() {
   const router = useRouter();
   const [from, setFrom] = useState(null);
 
-  useEffect(() => {
-const params = new URLSearchParams(window.location.search);
-    setFrom(value);
-  }, []);
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const fromParam = params.get("from");   // 👈 proper variable
+  setFrom(fromParam);
+}, []);
 
 
   // PRESERVED LOGIC: Existing handleLogin function
