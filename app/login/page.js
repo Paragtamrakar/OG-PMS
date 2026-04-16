@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Loader from "@/Components/Loader/Loader";
 export default function App() {
@@ -9,7 +9,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get("from");
+  const [from, setFrom] = useState(null);
+
+  useEffect(() => {
+    const value = searchParams.get("from");
+    setFrom(value);
+  }, [searchParams]);
+
 
   // PRESERVED LOGIC: Existing handleLogin function
   const handleLogin = async (e) => {
