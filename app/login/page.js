@@ -8,13 +8,12 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [from, setFrom] = useState(null);
 
   useEffect(() => {
-    const value = searchParams.get("from");
+const params = new URLSearchParams(window.location.search);
     setFrom(value);
-  }, [searchParams]);
+  }, []);
 
 
   // PRESERVED LOGIC: Existing handleLogin function
