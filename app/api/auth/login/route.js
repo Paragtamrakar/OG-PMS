@@ -30,7 +30,7 @@ export async function POST(req) {
 
   const response = NextResponse.json({ success: true });
 
-  // ✅ cookie set karne ka correct tareeka
+  //  cookie set karne ka  tareeka
   response.cookies.set("token", token, {
     httpOnly: true,
     secure: false, // production me true karenge

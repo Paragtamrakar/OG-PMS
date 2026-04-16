@@ -13,11 +13,21 @@ export function proxy(req) {
     pathname === "/favicon.ico"
   ) {
     // Agar already login hai aur /login open kar raha hai → redirect to home
-    if (pathname.startsWith("/login") && token) {
+    if (pathname.startsWith("/login")) {
+      if (!token) {
+        return NextResponse.next();
+      }
+
       try {
         jwt.verify(token, process.env.JWT_SECRET);
-        return NextResponse.redirect(new URL("/", req.url));
-      } catch {
+
+        const url = new URL(req.url);
+        const from = url.searchParams.get("from");
+
+        return NextResponse.redirect(new URL(from || "/", req.url));
+
+      } catch (err) {
+        // invalid/expired token → allow login page
         return NextResponse.next();
       }
     }
@@ -27,7 +37,9 @@ export function proxy(req) {
 
   // Protected routes
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("from", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   try {

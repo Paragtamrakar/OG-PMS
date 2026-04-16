@@ -6,6 +6,8 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const params = new URLSearchParams(window.location.search);
+  const from = params.get("from");
 
   // PRESERVED LOGIC: Existing handleLogin function
   const handleLogin = async (e) => {
@@ -29,7 +31,7 @@ export default function App() {
       if (data.success) {
         // PRESERVED LOGIC: router navigation (mocked for preview)
         console.log("Redirecting to /...");
-        window.location.href = "/";
+        window.location.href = from || "/";
       } else {
         alert(data.message || "Login failed");
       }
@@ -43,7 +45,7 @@ export default function App() {
   if (loading) return <Loader message="Signing you in..." />;
 
   return (
-    
+
     <div className="min-h-screen flex items-center justify-center bg-[#fdfcfb] font-serif relative overflow-hidden">
 
       {/* Decorative subtle background elements for hotel feel */}
