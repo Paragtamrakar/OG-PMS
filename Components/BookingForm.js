@@ -45,6 +45,14 @@ export default function BookingForm({ room, onBookingSuccess }) {
   };
 
   async function handleSaveBooking() {
+    // ✅ DATA STORE KAR LO (IMPORTANT)
+    const bookingData = {
+      phone: form.phone,
+      name: form.guestName,
+      roomNo: room.roomNo,
+      checkOut: form.checkOut
+    };
+
     try {
       setLoading(true);
 
@@ -62,17 +70,15 @@ export default function BookingForm({ room, onBookingSuccess }) {
             phone: form.phone,
             idType: form.idType,
             idNumber: form.idNumber,
-
             fatherName: form.fatherName,
             age: form.age,
             fromCity: form.fromCity,
             toCity: form.toCity,
             vehicleNumber: form.vehicleNumber,
             purposeOfVisit: form.purposeOfVisit,
-
             address: form.address
           },
-          guests: guests,   // ⭐ NEW
+          guests: guests,
           checkIn: new Date().toISOString(),
           checkOut: form.checkOut
         })
@@ -89,15 +95,38 @@ export default function BookingForm({ room, onBookingSuccess }) {
       if (onBookingSuccess) {
         onBookingSuccess(data.booking);
       }
-      // 🔥 RESET FORM HERE
-      setGuests([{ name: "", idType: "", idNumber: "", age: "" }])
-      setForm(initialForm)
+
+      // 🔥 RESET FORM
+      setGuests([{ name: "", idType: "", idNumber: "", age: "" }]);
+      setForm(initialForm);
+
       console.log("Saved booking:", data.booking);
+
     } catch (err) {
       console.error(err);
       alert("Server error");
     } finally {
       setLoading(false);
+    }
+
+    // ✅ WHATSAPP CALL (SAFE DATA USE KARKE)
+    try {
+      const res = await fetch("/api/send-checkin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("WhatsApp failed:", data);
+      }
+
+    } catch (err) {
+      console.error("WhatsApp error:", err.message);
     }
   }
 

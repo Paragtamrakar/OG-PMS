@@ -67,13 +67,20 @@ export async function POST(req, context) {
     const seq = await getNextSequence(`roomInvoice-${year}`);
 
     const invoiceNumber = `AV-${year}-${String(seq).padStart(5, "0")}`;
-
+    const phone = booking.guest?.phone || booking.phone;
+    if (!phone) {
+      return Response.json(
+        { message: "Phone missing in booking" },
+        { status: 400 }
+      );
+    }
     // 🔥 Create Invoice
     await Invoice.create({
       invoiceNumber,
       bookingId: booking._id,
       roomNo: booking.roomSnapshot.roomNo,
       guestName: booking.guest.name,
+      phone: booking.guest?.phone || booking.phone || null,
       checkIn: booking.checkIn,
       checkOut: effectiveCheckout,
       nights,
@@ -166,6 +173,7 @@ export async function GET(req, context) {
       roomPrice: booking.roomSnapshot.pricePerNight,
 
       // 🔹 GUEST
+      phone: booking.guest.phone,
       guestName: booking.guest.name,
       fromCity: booking.guest.fromCity,
       address: booking.guest.address,
@@ -188,8 +196,8 @@ export async function GET(req, context) {
       cgst,
       sgst,
       grandTotal
-    });
 
+    });
   } catch (err) {
     console.error("ERROR:", err);
     return Response.json(

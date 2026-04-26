@@ -86,6 +86,18 @@ export default function RoomCheckout() {
     }, 600);
 
     setLoading(false);
+    await fetch("/api/send-checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        phone: bill.phone,
+        name: bill?.guestName || bill?.name,
+        totalAmount: bill?.grandTotal,
+        nights: bill?.nights
+      })
+    });
   }
   return (
     <>
