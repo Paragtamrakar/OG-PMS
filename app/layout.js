@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "OG-PMS billing management",
   description: "Designed by The OG Developers",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({ children }) {
