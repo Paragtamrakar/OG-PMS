@@ -3,15 +3,23 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import A4RoomBill from "./Print/A4RoomBill";
+// import { useToast } from "@/Components/Toast/ToastProvider";
 
-export default function RoomCheckout() {
+export default function RoomCheckout({ onCheckoutSuccess }) {
   const [open, setOpen] = useState(false);
   const [rooms, setRooms] = useState([]);
   const [selectedId, setSelectedId] = useState("");
   const [bill, setBill] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [loading, setLoading] = useState(false);
+  // const { showToast } = useToast();
 
+  // toast helpler function
+  const getToastData = (bill) => ({
+    roomNo: bill.roomNo || bill.roomSnapshot?.roomNo,
+    guest: bill.guestName || bill.guest?.name,
+    total: bill.grandTotal,
+  });
   // 🔥 Fetch checked-in rooms when modal opens
   useEffect(() => {
     if (!open) return;
@@ -72,6 +80,19 @@ export default function RoomCheckout() {
     // 🔹 3. State update
     setBill(updatedBill);
 
+    // const data = getToastData(updatedBill);
+
+    // showToast({
+    //   type: "checkout",
+    //   title: `Room ${data.roomNo} Checked Out`,
+    //   subtitle: `${data.guest} • ₹${data.total}`,
+    // });
+
+    // yeh room chekout hone par cards green karega
+    if (onCheckoutSuccess) {
+      onCheckoutSuccess(updatedBill.roomNo);
+    }
+
     // 🔥 4. Thoda delay do React ko render karne ke liye
     setTimeout(() => {
       handlePrint(); // ✅ ab correct invoiceNumber print hoga
@@ -86,18 +107,23 @@ export default function RoomCheckout() {
     }, 600);
 
     setLoading(false);
-    await fetch("/api/send-checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        phone: bill.phone,
-        name: bill?.guestName || bill?.name,
-        totalAmount: bill?.grandTotal,
-        nights: bill?.nights
-      })
-    });
+    const rese = await fetch("/api/send-checkout", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    phone: updatedBill.phone,
+    name: updatedBill?.guestName || updatedBill?.name,
+    totalAmount: updatedBill?.grandTotal,
+    nights: updatedBill?.nights
+  })
+});
+
+// 🔥 DEBUG
+const ata = await rese.json();
+console.log("WhatsApp response:", ata);
+
   }
   return (
     <>

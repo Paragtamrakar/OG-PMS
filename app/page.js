@@ -27,6 +27,13 @@ export default function Home() {
     });
   };
 
+  //yeh code prop pass karega jisse checkout hone par automatic room cards green ho jayenge
+ function handleCheckoutSuccess(roomNo) {
+  setOccupiedRooms(prev =>
+    prev.filter(room => room.roomNo !== roomNo)
+  );
+}
+
   async function handleCheckDates({ checkIn, checkOut }) {
     const res = await fetch(
       `/api/bookings?checkIn=${checkIn}&checkOut=${checkOut}`
@@ -57,7 +64,7 @@ export default function Home() {
           onSelectRoom={setActiveRoomNo}
           occupiedRooms={occupiedRooms}
         />
-        <RoomCheckout />
+        <RoomCheckout onCheckoutSuccess={handleCheckoutSuccess} />
 
       </div>
 

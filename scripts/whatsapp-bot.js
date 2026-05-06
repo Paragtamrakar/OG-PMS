@@ -130,14 +130,15 @@ async function sendCheckinMessage(guestPhone, guestName, roomNo, checkOut) {
 📅 Check-out: ${checkOut}
 
 Enjoy your stay!`;
-
   await sendWhatsAppTemplate({
     to: `91${guestPhone}`,
     templateName: "ogpms_checkin_confirmation_v1",
     params: [
-      guestName,
-      roomNo,
-      checkOut
+      guestName,                               // {{1}}
+      "Amar vilas",                             // {{2}} hotel name
+      new Date().toLocaleDateString('en-IN'),  // {{3}} check-in date
+      checkOut,                                 // {{4}} check-out date
+      roomNo.toString()                         // {{5}} room number
     ]
   });
 }
@@ -153,14 +154,15 @@ async function sendCheckoutMessage(guestPhone, guestName, totalAmount, nights) {
 Visit again!`;
 
   return await sendWhatsAppTemplate({
-  to: `91${guestPhone}`,
-  templateName: "ogpms_checkout_confirmation_v1_",
-  params: [
-    guestName,
-    nights,
-    totalAmount
-  ]
-});
+    to: `91${guestPhone}`,
+    templateName: "ogpms_checkout_confirmation_v1_",
+    params: [
+      guestName,
+      "Amar vilas",
+      "Visit again soon",
+      totalAmount
+    ]
+  });
 }
 
 // ✅ Start bot
@@ -184,7 +186,7 @@ async function sendWhatsAppTemplate({ to, templateName, params = [] }) {
     type: "template",
     template: {
       name: templateName,
-      language: { code: "en_US" }
+      language: { code: "en" } // ✅ FIXED
     }
   };
 
@@ -212,6 +214,7 @@ async function sendWhatsAppTemplate({ to, templateName, params = [] }) {
   const data = await res.json();
 
   if (!res.ok) {
+    console.error("❌ WhatsApp Error:", data);
     throw new Error(JSON.stringify(data));
   }
 

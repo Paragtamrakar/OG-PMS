@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "@/Components/Toast/ToastProvider";
 
 import ServiceDown from "@/Components/ServiceDown";
 const isActive = process.env.NEXT_PUBLIC_SITE_ACTIVE === "true";
@@ -26,7 +27,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-          {!isActive ? <ServiceDown /> : children} 
+        <ToastProvider>
+          {!isActive ? <ServiceDown /> : children}
+        </ToastProvider>
       </body>
     </html>
   );

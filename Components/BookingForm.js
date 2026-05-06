@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { CheckCircle, Plus } from "lucide-react";
+import { useToast } from "@/Components/Toast/ToastProvider";
 
 export default function BookingForm({ room, onBookingSuccess }) {
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
   const [guests, setGuests] = useState([
     { name: "", idType: "", idNumber: "", age: "" }
   ]);
@@ -22,7 +24,8 @@ export default function BookingForm({ room, onBookingSuccess }) {
     purposeOfVisit: "",
     address: "",
     checkIn: "",
-    checkOut: ""
+    checkOut: "",
+    customPrice: room.pricing.base
   };
 
   const [form, setForm] = useState(initialForm)
@@ -63,7 +66,7 @@ export default function BookingForm({ room, onBookingSuccess }) {
           roomSnapshot: {
             roomNo: room.roomNo,
             name: room.name,
-            pricePerNight: room.pricing.base
+            pricePerNight: Number(form.customPrice)
           },
           guest: {
             name: form.guestName,
@@ -79,8 +82,9 @@ export default function BookingForm({ room, onBookingSuccess }) {
             address: form.address
           },
           guests: guests,
-          checkIn: new Date().toISOString(),
-          checkOut: form.checkOut
+          checkIn: form.checkIn,
+          checkOut: form.checkOut,
+
         })
       });
 
@@ -96,6 +100,11 @@ export default function BookingForm({ room, onBookingSuccess }) {
         onBookingSuccess(data.booking);
       }
 
+      showToast({
+        type: "checkin",
+        title: `Room ${data.booking.roomSnapshot.roomNo} Checked In`,
+        subtitle: `${data.booking.guest.name}`,
+      });
       // 🔥 RESET FORM
       setGuests([{ name: "", idType: "", idNumber: "", age: "" }]);
       setForm(initialForm);
@@ -329,12 +338,21 @@ export default function BookingForm({ room, onBookingSuccess }) {
       />
 
       {/* Rate */}
-      <div>
+      <div className="space-y-2">
         <div className="text-xs font-bold text-slate-400 uppercase">
-          Daily Rate
+          Room Price (Editable)
         </div>
-        <div className="text-xl font-bold text-slate-700">
-          ₹{room.pricing.base}
+
+        <input
+          type="number"
+          name="customPrice"
+          value={form.customPrice}
+          onChange={update}
+          className="w-full border-2 border-slate-200 rounded-lg p-3"
+        />
+
+        <div className="text-sm text-slate-500">
+          Default Price: ₹{room.pricing.base}
         </div>
       </div>
 
