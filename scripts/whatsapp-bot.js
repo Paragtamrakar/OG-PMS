@@ -122,23 +122,18 @@ const cron = require('node-cron');
 
 // ✅ Check-in (future ready)
 async function sendCheckinMessage(guestPhone, guestName, roomNo, checkOut) {
-  const message = `🏨 Welcome!
+  const checkInDate = formatDate(new Date());
+  const checkOutDate = formatDate(checkOut);
 
-👤 ${guestName}
-🚪 Room: ${roomNo}
-📅 Check-in: ${new Date().toLocaleDateString('en-IN')}
-📅 Check-out: ${checkOut}
-
-Enjoy your stay!`;
   await sendWhatsAppTemplate({
     to: `91${guestPhone}`,
     templateName: "ogpms_checkin_confirmation_v1",
     params: [
-      guestName,                               // {{1}}
-      "Amar vilas",                             // {{2}} hotel name
-      new Date().toLocaleDateString('en-IN'),  // {{3}} check-in date
-      checkOut,                                 // {{4}} check-out date
-      roomNo.toString()                         // {{5}} room number
+      guestName,
+      "Amar vilas",
+      checkInDate,
+      checkOutDate,
+      roomNo.toString()
     ]
   });
 }
