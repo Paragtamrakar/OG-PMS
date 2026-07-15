@@ -1,7 +1,7 @@
 import { connectDB } from "@/Mongodb/db";
 import Booking from "@/Schema/Booking";
 
-// ✅ EXISTING — DO NOT TOUCH
+
 export async function POST(req) {
   try {
     await connectDB();

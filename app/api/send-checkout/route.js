@@ -1,7 +1,7 @@
 import { sendCheckoutMessage } from "@/scripts/whatsapp-bot";
 
 export async function POST(req) {
-  console.log("PHONE ID:", process.env.PHONE_NUMBER_ID);
+
   try {
     const body = await req.json();
 

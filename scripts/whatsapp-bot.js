@@ -1,100 +1,12 @@
 const cron = require('node-cron');
 
-// ✅ Green API config (abhi hardcode)
-// const INSTANCE_ID = "7107587167";
-// const API_TOKEN = "d510569e10e34216a3b38a165e312e56efda7b45e2c345b38d";
-// const CLIENT_NUMBER = "917223952680";
-
-// const VERCEL_URL = "https://og-pms.vercel.app";
-
-// let isSending = false;
-
-// // ✅ Send WhatsApp via Green API
-// async function sendWhatsApp(message, phone = CLIENT_NUMBER) {
-//   const url = `https://api.green-api.com/waInstance${INSTANCE_ID}/sendMessage/${API_TOKEN}`;
-
-//   try {
-//     const res = await fetch(url, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//       body: JSON.stringify({
-//         chatId: `${phone}@c.us`,
-//         message: message
-//       })
-//     });
-
-//     const data = await res.json();
-//     console.log("✅ Sent:", data);
-
-//   } catch (err) {
-//     console.error("❌ Error:", err.message);
-//   }
-// }
-
-// // ✅ Aaj ki sales fetch
-// async function getTodaySales() {
-//   try {
-//     const today = new Date().toLocaleDateString('en-CA', {
-//       timeZone: 'Asia/Kolkata'
-//     });
-
-//     const url = `${VERCEL_URL}/api/reports?from=${today}&to=${today}`;
-
-//     console.log('🌐 Fetching:', url);
-
-//     const res = await fetch(url);
-//     if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
-//     const data = await res.json();
-//     console.log('📊 Data:', data);
-
-//     return data;
-
-//   } catch (err) {
-//     console.error('❌ Fetch Error:', err.message);
-//     return null;
-//   }
-// }
-
-// // ✅ Format message
-// function formatDailyReport(data) {
-//   const fmt = n => Number(n || 0).toLocaleString('en-IN');
-//   const date = new Date().toLocaleDateString('en-IN', {
-//     day: '2-digit',
-//     month: 'long',
-//     year: 'numeric'
-//   });
-
-//   if (!data || (!data.totalRevenue && !data.roomRevenue && !data.foodRevenue)) {
-//     return `🏨 OG PMS Daily Report
-
-// 📅 ${date}
-
-// ━━━━━━━━━━━━━━
-// ⚠️ No sales recorded today
-// ━━━━━━━━━━━━━━
-
-// _The OG Developers_`;
-//   }
-
-//   return `🏨 OG PMS Daily Report
-
-// 📅 ${date}
-
-// ━━━━━━━━━━━━━━
-
-// 💰 Total Revenue: ₹${fmt(data.totalRevenue)}
-
-// 🏨 Room: ₹${fmt(data.roomRevenue)}
-// 🍽 Food: ₹${fmt(data.foodRevenue)}
-// 🧾 GST: ₹${fmt(data.gstCollected)}
-
-// ━━━━━━━━━━━━━━
-
-// _The OG Developers_`;
-// }
+function formatDate(date) {
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
 
 // // ✅ Daily report send
 // async function sendDailyReport() {
@@ -122,10 +34,13 @@ const cron = require('node-cron');
 
 // ✅ Check-in (future ready)
 async function sendCheckinMessage(guestPhone, guestName, roomNo, checkOut) {
+  
   const checkInDate = formatDate(new Date());
   const checkOutDate = formatDate(checkOut);
 
-  await sendWhatsAppTemplate({
+
+
+   const payload = {
     to: `91${guestPhone}`,
     templateName: "ogpms_checkin_confirmation_v1",
     params: [
@@ -133,13 +48,21 @@ async function sendCheckinMessage(guestPhone, guestName, roomNo, checkOut) {
       "Amar vilas",
       checkInDate,
       checkOutDate,
-      roomNo.toString()
+      String(roomNo)
     ]
-  });
+  };
+
+
+  const result = await sendWhatsAppTemplate(payload);
+
+
+
+  return result;
 }
 
 // ✅ Check-out (future ready)
 async function sendCheckoutMessage(guestPhone, guestName, totalAmount, nights) {
+  
   const message = `🙏 Thank you for staying!
 
 👤 ${guestName}
@@ -160,14 +83,13 @@ Visit again!`;
   });
 }
 
-// ✅ Start bot
-console.log('🤖 OG PMS Green API Bot start ho raha hai...');
+
 
 
 
 // 🕙 Daily cron (10 PM IST)
 cron.schedule('9 23 * * *', () => {
-  console.log("🌙 Running daily report...");
+
   sendDailyReport();
 }, {
   timezone: "Asia/Kolkata"
@@ -210,6 +132,7 @@ async function sendWhatsAppTemplate({ to, templateName, params = [] }) {
 
   if (!res.ok) {
     console.error("❌ WhatsApp Error:", data);
+     console.dir(data, { depth: null });
     throw new Error(JSON.stringify(data));
   }
 
