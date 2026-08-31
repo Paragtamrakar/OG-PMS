@@ -56,6 +56,7 @@ export default function BookingForm({ room, onBookingSuccess }) {
       checkOut: form.checkOut
     };
 
+    const requestId = crypto.randomUUID();
     try {
       setLoading(true);
 
@@ -63,6 +64,7 @@ export default function BookingForm({ room, onBookingSuccess }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          requestId,
           roomSnapshot: {
             roomNo: room.roomNo,
             name: room.name,

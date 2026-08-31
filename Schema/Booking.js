@@ -7,7 +7,12 @@ const BookingSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
-
+    requestId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true
+    },
     roomSnapshot: {
       roomNo: { type: Number, required: true },
       name: { type: String, required: true },
