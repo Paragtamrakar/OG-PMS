@@ -23,6 +23,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
+import Navbar from "@/Components/Navbar";
 import { Utensils, LayoutGrid } from "lucide-react";
 import MenuManager from "@/Components/MenuManager";
 import RestaurantThermalBill from "@/Components/Print/RestaurantThermalBill";
@@ -84,28 +85,9 @@ export default function RestaurantPOS() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
 
       {/* ── HEADER ────────────────────────────────────────────────────────────── */}
-      <header className="bg-emerald-700 text-white px-6 py-4 flex justify-between items-center shadow-md print:hidden">
-        <div>
-          <a href="/" className="text-2xl font-bold tracking-tight text-white">OG-PMS</a>
-          <p className="text-emerald-100 text-sm flex items-center gap-2">
-            <Utensils size={14} /> Restaurant Management System
-          </p>
-        </div>
-        <div className="flex items-center gap-5">
-          <div className="text-right">
-            <p className="text-xs uppercase opacity-70 tracking-wide">Terminal</p>
-            <p className="font-mono font-bold">POS-01</p>
-          </div>
-          {view === "order" && (
-            <button
-              onClick={() => setActiveTableId(null)}
-              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/30 text-white text-sm font-semibold px-3 py-1.5 rounded-xl transition-colors"
-            >
-              <LayoutGrid size={15} /> Table View
-            </button>
-          )}
-        </div>
-      </header>
+    <div className="print:hidden">
+  <Navbar />
+</div>
 
       {/* ── MAIN CONTENT ──────────────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col overflow-hidden print:block print:bg-white">
